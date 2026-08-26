@@ -16,7 +16,7 @@
 <!-- El ?v= es a propósito: GitHub Pages deja los ficheros en cache diez
      minutos, y sin esto el navegador sigue sirviendo el CSS y el JS viejos
      despues de publicar. Al tocar css o js, se SUBE este numero. -->
-<link rel="stylesheet" href="css/estilos.css?v=7">
+<link rel="stylesheet" href="css/estilos.css?v=8">
 </head>
 <body>
 
@@ -305,6 +305,17 @@
   <section id="contacto" class="cierre">
     <div class="contenido">
       <h2 class="revelar"><span data-t="cierre.h2a">Tu servidor. Tu código.</span> <span class="naranja" data-t="cierre.h2b">Tu bolsillo.</span></h2>
+      <!-- El vídeo va justo debajo del titular: es lo último que se ve antes
+           del botón, y enseña de qué va la cosa mejor que un párrafo. Aquí NO
+           se difumina —esto es contenido, no ambiente— y solo se oscurece un
+           punto para que no deslumbre sobre el negro de la página. -->
+      <div class="marco-video revelar">
+        <video id="videoCierre" class="video-cierre" autoplay muted playsinline preload="metadata">
+          <source src="video/cierre.mp4" type="video/mp4">
+        </video>
+        <span class="marco-video-brillo" aria-hidden="true"></span>
+      </div>
+
       <p class="bajada revelar" data-t="cierre.p">Cuéntanos qué quieres montar y te decimos qué hace falta, sin compromiso.</p>
       <a class="boton acento grande" href="mailto:pedro@prevencion.cc?subject=Todo%20en%20tus%20Manos" data-t="cierre.cta">Escríbenos</a>
     </div>
@@ -319,8 +330,8 @@
   </div>
 </footer>
 
-<script src="js/idiomas.js?v=7"></script>
-<script src="js/fondo.js?v=7"></script>
-<script src="js/app.js?v=7"></script>
+<script src="js/idiomas.js?v=8"></script>
+<script src="js/fondo.js?v=8"></script>
+<script src="js/app.js?v=8"></script>
 </body>
 </html>

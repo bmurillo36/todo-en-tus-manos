@@ -753,6 +753,44 @@ h2 {
 /* --------------------------------------------------------------- cierre */
 
 .cierre { padding: 130px 0 140px; text-align: center; }
+
+/* El vídeo del cierre. A diferencia del de las características, este es
+   CONTENIDO: ni se difumina ni se apaga apenas, solo lo justo para que no
+   deslumbre sobre el negro de la página. */
+.marco-video {
+  position: relative;
+  max-width: 860px;
+  margin: 6px auto 34px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--borde-claro);
+  background: #050506;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(217, 119, 87, 0.14);
+  line-height: 0;
+}
+.video-cierre {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: brightness(0.88) contrast(1.04) saturate(0.95);
+  /* El fundido a negro al terminar. Se apaga la opacidad sobre el fondo negro
+     del marco, que ya es #050506: así el negro al que funde es el mismo negro
+     de la página y no se ve un salto de tono. */
+  opacity: 1;
+  transition: opacity 0.9s ease;
+}
+.video-cierre.fundido { opacity: 0; }
+/* Un velo muy suave por arriba y por abajo para que el vídeo se case con la
+   página en lugar de quedar como un recorte pegado encima. */
+.marco-video-brillo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(10, 10, 11, 0.35) 0%, transparent 22%, transparent 78%, rgba(10, 10, 11, 0.45) 100%);
+}
+@media (max-width: 620px) {
+  .marco-video { border-radius: 14px; margin-bottom: 26px; }
+}
 .cierre h2 { margin: 0 auto 16px; max-width: none; }
 .cierre .bajada { margin: 0 auto 34px; }
 

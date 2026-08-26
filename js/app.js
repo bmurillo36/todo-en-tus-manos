@@ -302,33 +302,51 @@ function contarCifras() {
 }
 if (!QUIETO) contarCifras();
 
-/* --------------------------------------------------- vídeo de la escena */
+/* ----------------------------------------------------------- los vídeos */
 
-/* A cámara lenta y solo mientras se ve. Lo de la velocidad no se puede poner
-   en el HTML —no hay atributo para eso—, así que va aquí. Y pausarlo cuando
-   la sección no está en pantalla no es un capricho: un vídeo en bucle que
-   nadie mira sigue gastando batería y calentando el teléfono. */
-const videoEscena = $('videoEscena');
-if (videoEscena) {
-  const LENTO = 0.55;
-  const ponerLento = () => { try { videoEscena.playbackRate = LENTO; } catch (e) { /* aún no listo */ } };
-  videoEscena.addEventListener('loadedmetadata', ponerLento);
-  videoEscena.addEventListener('play', ponerLento);
-  ponerLento();
+/* Los dos comparten trato: se pausan cuando no se ven —un bucle que nadie
+   mira sigue gastando batería y calentando el teléfono— y con «menos
+   movimiento» se quedan quietos.
 
-  if (QUIETO) {
-    /* Con «menos movimiento» pedido: un fotograma quieto y nada más. */
-    videoEscena.pause();
-  } else if ('IntersectionObserver' in window) {
-    const vigilante = new IntersectionObserver((entradas) => {
-      entradas.forEach((e) => {
-        if (e.isIntersecting) { videoEscena.play().then(ponerLento).catch(() => {}); }
-        else { videoEscena.pause(); }
-      });
-    }, { threshold: 0.01 });
-    vigilante.observe(videoEscena);
+   Lo que cambia es el papel de cada uno. El del fondo es AMBIENTE: va lento y
+   en bucle continuo. El del cierre es CONTENIDO: va a su ritmo, se funde a
+   negro al terminar y vuelve a empezar dos segundos después, para que se note
+   que ha acabado en vez de saltar de golpe al primer fotograma. */
+function montarVideo(elemento, opciones) {
+  if (!elemento) return;
+  const ajustes = opciones || {};
+  const velocidad = ajustes.velocidad || 1;
+  const ponerVelocidad = () => { try { elemento.playbackRate = velocidad; } catch (e) { /* aún no listo */ } };
+  elemento.addEventListener('loadedmetadata', ponerVelocidad);
+  elemento.addEventListener('play', ponerVelocidad);
+  ponerVelocidad();
+
+  /* El fundido y la espera: sin `loop`, se atiende el final a mano. */
+  if (ajustes.fundido) {
+    elemento.loop = false;
+    elemento.addEventListener('ended', () => {
+      elemento.classList.add('fundido');
+      setTimeout(() => {
+        try { elemento.currentTime = 0; } catch (e) { /* aún no se puede */ }
+        elemento.classList.remove('fundido');
+        elemento.play().then(ponerVelocidad).catch(() => {});
+      }, ajustes.espera || 2000);
+    });
   }
+
+  if (QUIETO) { elemento.pause(); return; }
+  if (!('IntersectionObserver' in window)) return;
+  const vigilante = new IntersectionObserver((entradas) => {
+    entradas.forEach((e) => {
+      if (e.isIntersecting) elemento.play().then(ponerVelocidad).catch(() => {});
+      else elemento.pause();
+    });
+  }, { threshold: 0.01 });
+  vigilante.observe(elemento);
 }
+
+montarVideo($('videoEscena'), { velocidad: 0.55 });
+montarVideo($('videoCierre'), { velocidad: 1, fundido: true, espera: 2000 });
 
 /* ------------------------------------------------------------- arranque */
 
