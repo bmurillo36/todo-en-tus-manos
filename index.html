@@ -16,7 +16,7 @@
 <!-- El ?v= es a propósito: GitHub Pages deja los ficheros en cache diez
      minutos, y sin esto el navegador sigue sirviendo el CSS y el JS viejos
      despues de publicar. Al tocar css o js, se SUBE este numero. -->
-<link rel="stylesheet" href="css/estilos.css?v=4">
+<link rel="stylesheet" href="css/estilos.css?v=5">
 </head>
 <body>
 
@@ -26,9 +26,33 @@
 <canvas id="fondo" aria-hidden="true"></canvas>
 <div class="velo" aria-hidden="true"></div>
 
+<!-- El teléfono va FUERA de <main> a propósito. Tiene que quedar por delante
+     del fondo negro con las letras y por DETRÁS de todo el contenido, y eso
+     solo se consigue si no está dentro de la pila de main: un padre con
+     z-index crea su propio contexto y ningún hijo puede salirse de él.
+
+     Va fijo: se queda a la misma altura de la pantalla, sin moverse a los
+     lados, y gira sin parar mientras se baja. -->
+<div class="movil" id="movil" aria-hidden="true">
+  <div class="movil-marco" id="movilMarco">
+    <div class="movil-cara">
+      <div class="movil-muesca"></div>
+      <div class="movil-barra"><span class="chispa-mini"></span> claude · mi-proyecto</div>
+      <div class="movil-terminal"><div class="movil-lineas" id="terminalDemo"></div></div>
+    </div>
+    <div class="movil-espalda">
+      <span class="movil-camara"></span>
+      <span class="movil-chispa">
+        <svg viewBox="0 0 32 32"><path d="M16 1.6l2.9 9.1 9.1-2.9-6.2 7.2 6.2 7.2-9.1-2.9-2.9 9.1-2.9-9.1-9.1 2.9 6.2-7.2-6.2-7.2 9.1 2.9z"/></svg>
+      </span>
+      <span class="movil-firma">Todo en tus Manos</span>
+    </div>
+  </div>
+</div>
+
 <header class="barra" id="barra">
   <a class="marca" href="#inicio">
-    <span class="chispa" aria-hidden="true">
+    <span class="chispa pensando" aria-hidden="true">
       <svg viewBox="0 0 32 32"><path d="M16 1.6l2.9 9.1 9.1-2.9-6.2 7.2 6.2 7.2-9.1-2.9-2.9 9.1-2.9-9.1-9.1 2.9 6.2-7.2-6.2-7.2 9.1 2.9z"/></svg>
     </span>
     <span class="marca-texto">Todo en tus <b>Manos</b></span>
@@ -81,27 +105,6 @@
       <p class="apunte" data-t="hero.pie">Tu servidor · tu GitHub · tus datos. 9,99 €/mes de mantenimiento.</p>
     </div>
 
-    <!-- Móvil de la portada: la terminal contándose sola mientras el teléfono
-         gira sobre sí mismo al desplazar. Gira de verdad, en tres dimensiones,
-         así que tiene cara y espalda: media vuelta sin espalda se vería como
-         un cartón. -->
-    <div class="movil" aria-hidden="true">
-      <div class="movil-marco" id="movilMarco">
-        <div class="movil-cara">
-          <div class="movil-muesca"></div>
-          <div class="movil-barra"><span class="chispa-mini"></span> claude · mi-proyecto</div>
-          <div class="movil-terminal"><div class="movil-lineas" id="terminalDemo"></div></div>
-        </div>
-        <div class="movil-espalda">
-          <span class="movil-camara"></span>
-          <span class="movil-chispa">
-            <svg viewBox="0 0 32 32"><path d="M16 1.6l2.9 9.1 9.1-2.9-6.2 7.2 6.2 7.2-9.1-2.9-2.9 9.1-2.9-9.1-9.1 2.9 6.2-7.2-6.2-7.2 9.1 2.9z"/></svg>
-          </span>
-          <span class="movil-firma">Todo en tus Manos</span>
-        </div>
-      </div>
-    </div>
-
     <div class="franja-datos">
       <div><b>24/7</b><span data-t="datos.1">la sesión nunca se apaga</span></div>
       <div><b>6</b><span data-t="datos.2">idiomas en la app</span></div>
@@ -138,7 +141,11 @@
   </section>
 
   <!-- ------------------------------------------------- características -->
-  <section id="caracteristicas" class="seccion oscura">
+  <section id="caracteristicas" class="seccion oscura con-escena">
+    <!-- Fondo de la sección: un informático escribiendo, luz tenue y picado
+         desde arriba. Si el fichero no está, queda el degradado de debajo y la
+         sección se ve bien igual: nunca un hueco roto. -->
+    <div class="escena" aria-hidden="true"></div>
     <div class="contenido">
       <p class="etiqueta" data-t="sec.carac">Características</p>
       <h2 class="revelar" data-t="carac.h2">Todo lo que necesitas para programar desde el móvil</h2>
@@ -210,18 +217,44 @@
           <a class="boton contorno ancho" href="#contacto" data-t="plan1.cta">Escríbenos</a>
         </article>
 
-        <article class="plan destacado revelar">
-          <span class="cinta" data-t="plan2.cinta">mantenimiento</span>
-          <h3 data-t="plan2.h3">Todo cuidado</h3>
+        <article class="plan revelar">
+          <h3 data-t="plan2.h3">Mantenimiento</h3>
           <p class="cifra">9,99 €<small data-t="plan2.mes"> / mes</small></p>
-          <p class="plan-nota" data-t="plan2.nota">Menos de lo que cuesta un café. Al mes, y sin permanencia.</p>
+          <p class="plan-nota" data-t="plan2.nota">Tú pones el servidor. Nosotros lo mantenemos al día.</p>
           <ul>
             <li data-t="plan2.l1">Actualizaciones automáticas desde GitHub</li>
             <li data-t="plan2.l2">Mejoras y funciones nuevas incluidas</li>
             <li data-t="plan2.l3">Soporte por correo</li>
             <li data-t="plan2.l4">Se renueva mes a mes, sin permanencia</li>
           </ul>
-          <a class="boton acento ancho" href="#contacto" data-t="plan2.cta">Empezar</a>
+          <a class="boton contorno ancho" href="#contacto" data-t="plan2.cta">Empezar</a>
+        </article>
+
+        <article class="plan destacado revelar">
+          <span class="cinta" data-t="plan3.cinta">el más elegido</span>
+          <h3 data-t="plan3.h3">Servidor incluido</h3>
+          <p class="cifra">29,99 €<small data-t="plan3.mes"> / mes</small></p>
+          <p class="plan-nota" data-t="plan3.nota">No tienes que contratar ni configurar nada: el servidor lo ponemos nosotros.</p>
+          <ul>
+            <li data-t="plan3.l1">Servidor incluido, a tu nombre</li>
+            <li data-t="plan3.l2">Todo el mantenimiento del plan anterior</li>
+            <li data-t="plan3.l3"><b>1 hora al mes</b> de un experto para ti</li>
+            <li data-t="plan3.l4">Se renueva mes a mes, sin permanencia</li>
+          </ul>
+          <a class="boton acento ancho" href="#contacto" data-t="plan3.cta">Empezar</a>
+        </article>
+
+        <article class="plan revelar">
+          <h3 data-t="plan4.h3">Con experto dedicado</h3>
+          <p class="cifra">49,99 €<small data-t="plan4.mes"> / mes</small></p>
+          <p class="plan-nota" data-t="plan4.nota">Para quien quiere avanzar de verdad y tener a alguien al otro lado.</p>
+          <ul>
+            <li data-t="plan4.l1">Servidor y mantenimiento incluidos</li>
+            <li data-t="plan4.l2"><b>3 horas al mes</b> de un experto para ti</li>
+            <li data-t="plan4.l3">Explicaciones, programación y lo que necesites</li>
+            <li data-t="plan4.l4">Se renueva mes a mes, sin permanencia</li>
+          </ul>
+          <a class="boton contorno ancho" href="#contacto" data-t="plan4.cta">Hablemos</a>
         </article>
       </div>
 
@@ -279,8 +312,8 @@
   </div>
 </footer>
 
-<script src="js/idiomas.js?v=4"></script>
-<script src="js/fondo.js?v=4"></script>
-<script src="js/app.js?v=4"></script>
+<script src="js/idiomas.js?v=5"></script>
+<script src="js/fondo.js?v=5"></script>
+<script src="js/app.js?v=5"></script>
 </body>
 </html>

@@ -87,16 +87,35 @@ window.addEventListener('scroll', () => requestAnimationFrame(alDesplazar), { pa
 
 /* Cada elemento con data-parallax se mueve a su propio ritmo. Sin transición
    CSS a propósito: la transición y el scroll se pelean y sale a tirones. */
-const conParallax = Array.from(document.querySelectorAll('[data-parallax]'));
 
-/* El teléfono gira sobre sí mismo mientras se baja: una vuelta entera a lo
-   largo de vez y media la pantalla. La rotación se SUAVIZA hacia el objetivo en
-   vez de saltar al valor exacto del scroll; con el desplazamiento por inercia
-   del móvil, ir pegado al scroll se ve a tirones. */
+/* El teléfono va FIJO: se queda a la misma altura de la pantalla mientras se
+   baja y gira sin parar hasta el final de la página. Tres vueltas completas de
+   arriba abajo — con una sola apenas se notaba pasada la portada.
+
+   La posición horizontal se calcula: tiene que caer donde estaría la columna
+   derecha de la portada, y eso depende del ancho de la ventana. Se recalcula
+   al cambiar de tamaño y no se mueve nunca mientras se baja, que es lo pedido. */
+const conParallax = Array.from(document.querySelectorAll('[data-parallax]'));
+const movil = $('movil');
 const marco = $('movilMarco');
+const VUELTAS = 3;
 let giroObjetivo = 0;
 let giroActual = 0;
 let girando = false;
+
+function colocarMovil() {
+  if (!movil) return;
+  const portada = document.querySelector('.portada');
+  if (!portada) return;
+  const caja = portada.getBoundingClientRect();
+  const ancho = movil.offsetWidth || 290;
+  /* La columna derecha de la portada empieza al 55 % de su ancho; el teléfono
+     se centra en lo que queda. Con la ventana estrecha, el CSS lo esconde. */
+  const izquierdaColumna = caja.left + caja.width * 0.55;
+  const anchoColumna = caja.width * 0.45;
+  movil.style.left = Math.round(izquierdaColumna + (anchoColumna - ancho) / 2) + 'px';
+  movil.classList.add('puesto');
+}
 
 function moverParallax(y) {
   if (y < window.innerHeight * 1.6) {
@@ -106,9 +125,10 @@ function moverParallax(y) {
     }
   }
   if (!marco) return;
-  const recorrido = window.innerHeight * 1.5;
-  const avance = Math.max(0, Math.min(y / recorrido, 1.35));
-  giroObjetivo = avance * 360;
+  /* El giro se reparte a lo largo de TODA la página, no solo de la portada:
+     así sigue girando mientras se baja, que es lo que se pide. */
+  const recorrido = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+  giroObjetivo = (y / recorrido) * 360 * VUELTAS;
   if (!girando) { girando = true; requestAnimationFrame(suavizarGiro); }
 }
 
@@ -116,19 +136,19 @@ function suavizarGiro() {
   const falta = giroObjetivo - giroActual;
   giroActual += falta * 0.12;
   /* Se inclina un poco a la vez que gira: girar solo en un eje se ve plano,
-     como una puerta. Y sube despacio, que es el parallax del propio teléfono. */
+     como una puerta. La inclinación sigue al propio giro, así que va y viene
+     sola sin depender del scroll. */
   const inclina = Math.sin(giroActual * Math.PI / 180) * 6;
-  const sube = -(window.scrollY || 0) * 0.16;
   marco.style.transform =
-    'translate3d(0, ' + sube.toFixed(1) + 'px, 0)'
-    + ' rotateX(' + inclina.toFixed(2) + 'deg)'
-    + ' rotateY(' + giroActual.toFixed(2) + 'deg)';
+    'rotateX(' + inclina.toFixed(2) + 'deg) rotateY(' + giroActual.toFixed(2) + 'deg)';
   if (Math.abs(falta) > 0.05) {
     requestAnimationFrame(suavizarGiro);
   } else {
     girando = false;
   }
 }
+
+window.addEventListener('resize', colocarMovil);
 
 /* ------------------------------------------------- aparecer al llegar */
 
@@ -286,4 +306,5 @@ if (!QUIETO) contarCifras();
 
 /* Lo último del fichero, a propósito: aquí ya están declaradas todas las
    constantes que toca la primera pasada. */
+colocarMovil();
 alDesplazar();
