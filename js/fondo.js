@@ -42,10 +42,13 @@
     '✓ Sesión persistente · 24/7'
   ];
 
+  /* Las letras se ven de verdad (antes casi no se leian): la de delante casi
+     al medio tono, y las de detras cada vez mas apagadas para que la
+     profundidad se note sin ensuciar el texto de encima. */
   const CAPAS = [
-    { tam: 11, alfa: 0.20, vel: 14, sep: 210, desfase: 0.06 },
-    { tam: 13, alfa: 0.13, vel: 9,  sep: 260, desfase: 0.12 },
-    { tam: 17, alfa: 0.07, vel: 5,  sep: 340, desfase: 0.22 }
+    { tam: 12, alfa: 0.52, vel: 14, sep: 200, desfase: 0.06 },
+    { tam: 14, alfa: 0.34, vel: 9,  sep: 250, desfase: 0.12 },
+    { tam: 18, alfa: 0.18, vel: 5,  sep: 330, desfase: 0.22 }
   ];
 
   let ancho = 0;
@@ -117,11 +120,11 @@
       const yEnvuelta = ((y % (alto + 120)) + alto + 120) % (alto + 120) - 60;
 
       ctx.font = capa.tam + 'px "JetBrains Mono", ui-monospace, Menlo, monospace';
-      ctx.fillStyle = 'rgba(217, 119, 87, ' + capa.alfa + ')';
+      ctx.fillStyle = 'rgba(226, 133, 100, ' + capa.alfa + ')';
       ctx.fillText(escrito, col.x, yEnvuelta);
 
       if (col.letras < texto.length) {
-        ctx.fillStyle = 'rgba(255, 139, 99, ' + (capa.alfa * 2.2) + ')';
+        ctx.fillStyle = 'rgba(255, 150, 112, ' + Math.min(0.95, capa.alfa * 1.8) + ')';
         ctx.fillRect(col.x + ctx.measureText(escrito).width + 1, yEnvuelta - capa.tam + 3, capa.tam * 0.5, capa.tam);
       }
     }
@@ -149,7 +152,7 @@
       const capa = CAPAS[col.capa];
       const y = ((col.y % alto) + alto) % alto;
       ctx.font = capa.tam + 'px "JetBrains Mono", ui-monospace, Menlo, monospace';
-      ctx.fillStyle = 'rgba(217, 119, 87, ' + (capa.alfa * 0.7) + ')';
+      ctx.fillStyle = 'rgba(226, 133, 100, ' + (capa.alfa * 0.7) + ')';
       ctx.fillText(LINEAS[col.linea], col.x, y);
     }
   }

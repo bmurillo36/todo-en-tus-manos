@@ -78,13 +78,24 @@
       <p class="apunte" data-t="hero.pie">Tu servidor · tu GitHub · tus datos. 9,99 €/mes de mantenimiento.</p>
     </div>
 
-    <!-- Móvil de la portada: la terminal contándose sola. -->
-    <div class="movil" data-parallax="-0.18" aria-hidden="true">
-      <div class="movil-marco">
-        <div class="movil-muesca"></div>
-        <div class="movil-barra"><span class="chispa-mini"></span> claude · mi-proyecto</div>
-        <div class="movil-terminal" id="terminalDemo"></div>
-        <div class="movil-teclas"><span>esc</span><span>⏎</span><span>⌫</span><span>▲</span><span>▼</span></div>
+    <!-- Móvil de la portada: la terminal contándose sola mientras el teléfono
+         gira sobre sí mismo al desplazar. Gira de verdad, en tres dimensiones,
+         así que tiene cara y espalda: media vuelta sin espalda se vería como
+         un cartón. -->
+    <div class="movil" aria-hidden="true">
+      <div class="movil-marco" id="movilMarco">
+        <div class="movil-cara">
+          <div class="movil-muesca"></div>
+          <div class="movil-barra"><span class="chispa-mini"></span> claude · mi-proyecto</div>
+          <div class="movil-terminal"><div class="movil-lineas" id="terminalDemo"></div></div>
+        </div>
+        <div class="movil-espalda">
+          <span class="movil-camara"></span>
+          <span class="movil-chispa">
+            <svg viewBox="0 0 32 32"><path d="M16 1.6l2.9 9.1 9.1-2.9-6.2 7.2 6.2 7.2-9.1-2.9-2.9 9.1-2.9-9.1-9.1 2.9 6.2-7.2-6.2-7.2 9.1 2.9z"/></svg>
+          </span>
+          <span class="movil-firma">Todo en tus Manos</span>
+        </div>
       </div>
     </div>
 

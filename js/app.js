@@ -84,11 +84,45 @@ alDesplazar();
 /* Cada elemento con data-parallax se mueve a su propio ritmo. Sin transición
    CSS a propósito: la transición y el scroll se pelean y sale a tirones. */
 const conParallax = Array.from(document.querySelectorAll('[data-parallax]'));
+
+/* El teléfono gira sobre sí mismo mientras se baja: una vuelta entera a lo
+   largo de vez y media la pantalla. La rotación se SUAVIZA hacia el objetivo en
+   vez de saltar al valor exacto del scroll; con el desplazamiento por inercia
+   del móvil, ir pegado al scroll se ve a tirones. */
+const marco = $('movilMarco');
+let giroObjetivo = 0;
+let giroActual = 0;
+let girando = false;
+
 function moverParallax(y) {
-  if (y > window.innerHeight * 1.4) return;   // fuera de la portada, ni se toca
-  for (const el of conParallax) {
-    const factor = parseFloat(el.dataset.parallax) || 0;
-    el.style.transform = 'translate3d(0, ' + (y * factor).toFixed(1) + 'px, 0)';
+  if (y < window.innerHeight * 1.6) {
+    for (const el of conParallax) {
+      const factor = parseFloat(el.dataset.parallax) || 0;
+      el.style.transform = 'translate3d(0, ' + (y * factor).toFixed(1) + 'px, 0)';
+    }
+  }
+  if (!marco) return;
+  const recorrido = window.innerHeight * 1.5;
+  const avance = Math.max(0, Math.min(y / recorrido, 1.35));
+  giroObjetivo = avance * 360;
+  if (!girando) { girando = true; requestAnimationFrame(suavizarGiro); }
+}
+
+function suavizarGiro() {
+  const falta = giroObjetivo - giroActual;
+  giroActual += falta * 0.12;
+  /* Se inclina un poco a la vez que gira: girar solo en un eje se ve plano,
+     como una puerta. Y sube despacio, que es el parallax del propio teléfono. */
+  const inclina = Math.sin(giroActual * Math.PI / 180) * 6;
+  const sube = -(window.scrollY || 0) * 0.16;
+  marco.style.transform =
+    'translate3d(0, ' + sube.toFixed(1) + 'px, 0)'
+    + ' rotateX(' + inclina.toFixed(2) + 'deg)'
+    + ' rotateY(' + giroActual.toFixed(2) + 'deg)';
+  if (Math.abs(falta) > 0.05) {
+    requestAnimationFrame(suavizarGiro);
+  } else {
+    girando = false;
   }
 }
 
@@ -138,10 +172,25 @@ if (pantalla) {
     let paso = 0;
     let letra = 0;
     let html = '';
+    const ventana = pantalla.parentElement;
+
+    /* Las líneas SUBEN, no se borran de golpe: cuando lo escrito pasa del alto
+       de la ventana, se desplaza el bloque hacia arriba. Es lo que hace una
+       terminal de verdad, y de paso siempre hay movimiento dentro. */
+    function subir() {
+      if (!ventana) return;
+      const sobra = pantalla.scrollHeight - ventana.clientHeight + 20;
+      pantalla.style.transform = 'translateY(' + (sobra > 0 ? -sobra : 0) + 'px)';
+    }
 
     function tic() {
       if (paso >= GUION.length) {
-        setTimeout(() => { paso = 0; letra = 0; html = ''; tic(); }, 2600);
+        setTimeout(() => {
+          /* Se encadena otra vuelta SIN vaciar: lo viejo sigue subiendo y
+             desaparece por arriba, como en la terminal de verdad. */
+          if (pantalla.scrollHeight > 1400) { html = ''; pantalla.style.transform = 'translateY(0)'; }
+          paso = 0; letra = 0; tic();
+        }, 2400);
         return;
       }
       const trozo = GUION[paso];
@@ -149,11 +198,13 @@ if (pantalla) {
         letra++;
         const visto = trozo.t.slice(0, letra);
         pantalla.innerHTML = html + '<span class="' + trozo.c + '">' + visto + '</span><i class="cursor">&nbsp;</i>';
+        subir();
         if (letra >= trozo.t.length) { html += '<span class="' + trozo.c + '">' + trozo.t + '</span>'; paso++; letra = 0; }
         setTimeout(tic, 45);
       } else {
         html += '<span class="' + (trozo.c || '') + '">' + trozo.t + '</span>';
         pantalla.innerHTML = html + '<i class="cursor">&nbsp;</i>';
+        subir();
         paso++;
         setTimeout(tic, trozo.espera || 260);
       }

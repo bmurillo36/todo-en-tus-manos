@@ -54,9 +54,12 @@ body {
   z-index: 1;
   pointer-events: none;
   background:
-    radial-gradient(1100px 620px at 78% 8%, rgba(217, 119, 87, 0.16), transparent 62%),
-    radial-gradient(900px 700px at 8% 82%, rgba(217, 119, 87, 0.07), transparent 60%),
-    linear-gradient(180deg, rgba(10, 10, 11, 0.62) 0%, rgba(10, 10, 11, 0.88) 45%, rgba(10, 10, 11, 0.96) 100%);
+    radial-gradient(1100px 620px at 78% 8%, rgba(217, 119, 87, 0.14), transparent 62%),
+    radial-gradient(900px 700px at 8% 82%, rgba(217, 119, 87, 0.06), transparent 60%),
+    /* Bastante mas transparente que antes: el codigo de detras tiene que
+       LEERSE, que es la gracia. Se oscurece solo lo justo bajo los bloques
+       de texto, y esos ya llevan su propio fondo. */
+    linear-gradient(180deg, rgba(10, 10, 11, 0.30) 0%, rgba(10, 10, 11, 0.58) 45%, rgba(10, 10, 11, 0.74) 100%);
 }
 header, main, footer, .capa-idiomas { position: relative; z-index: 2; }
 
@@ -250,20 +253,70 @@ h1 span { display: block; }
 
 /* --------------------------------------------------- móvil de portada */
 
-.movil { display: flex; justify-content: center; }
+/* El teléfono gira sobre sí mismo al desplazar. Para que gire de VERDAD hace
+   falta perspectiva en el padre y preserve-3d en el marco; si no, se aplana y
+   parece un naipe. Y como da la vuelta entera, tiene cara y espalda: media
+   vuelta sin espalda se vería como un cartón. */
+.movil {
+  display: flex;
+  justify-content: center;
+  perspective: 1600px;
+  perspective-origin: 50% 42%;
+}
 .movil-marco {
   position: relative;
   width: 290px;
-  height: 570px;
+  height: 580px;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.movil-cara,
+.movil-espalda {
+  position: absolute;
+  inset: 0;
   border-radius: 42px;
   background: var(--negro-2);
   border: 1px solid var(--borde-claro);
-  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.6), 0 0 70px rgba(217, 119, 87, 0.1);
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.62), 0 0 80px rgba(217, 119, 87, 0.14);
+  /* Sin esto se ven las dos caras a la vez y el giro sale sucio. */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
+}
+.movil-cara {
   padding: 12px 10px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
+.movil-espalda {
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background:
+    radial-gradient(120% 80% at 50% 0%, #1b1b20 0%, #0d0d10 60%),
+    var(--negro-2);
+}
+.movil-camara {
+  position: absolute;
+  top: 26px; left: 26px;
+  width: 46px; height: 46px;
+  border-radius: 14px;
+  background: #08080a;
+  border: 1px solid var(--borde);
+  box-shadow: inset 0 0 0 6px #0d0d10;
+}
+.movil-chispa svg { width: 54px; height: 54px; fill: var(--naranja); display: block; }
+.movil-firma {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--tenue);
+}
+
 .movil-muesca {
   position: absolute;
   top: 10px; left: 50%;
@@ -271,6 +324,7 @@ h1 span { display: block; }
   width: 92px; height: 20px;
   border-radius: 12px;
   background: #000;
+  z-index: 2;
 }
 .movil-barra {
   margin-top: 26px;
@@ -283,6 +337,7 @@ h1 span { display: block; }
   display: flex;
   align-items: center;
   gap: 7px;
+  flex: 0 0 auto;
 }
 .chispa-mini {
   width: 8px; height: 8px;
@@ -290,43 +345,38 @@ h1 span { display: block; }
   background: var(--naranja);
   box-shadow: 0 0 8px var(--naranja);
 }
+
+/* La ventana de la terminal recorta; las líneas de dentro suben solas. */
 .movil-terminal {
-  flex: 1;
-  margin: 8px 0;
+  flex: 1 1 auto;
+  margin: 8px 0 12px;
   padding: 10px;
   border-radius: 10px;
   background: #050506;
   border: 1px solid var(--borde);
+  overflow: hidden;
+  position: relative;
+}
+.movil-lineas {
   font-family: var(--mono);
   font-size: 10.5px;
-  line-height: 1.55;
+  line-height: 1.62;
   color: var(--texto);
-  overflow: hidden;
   white-space: pre-wrap;
   word-break: break-word;
+  will-change: transform;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.movil-terminal .ok { color: #7fa87f; }
-.movil-terminal .nar { color: var(--naranja); }
-.movil-terminal .gris { color: var(--tenue); }
-.movil-terminal .cursor {
+.movil-lineas .ok { color: #7fa87f; }
+.movil-lineas .nar { color: var(--naranja); }
+.movil-lineas .gris { color: var(--tenue); }
+.movil-lineas .cursor {
   display: inline-block;
-  width: 7px;
+  width: 6px;
   background: var(--naranja);
   animation: parpadeo 1s steps(2) infinite;
 }
 @keyframes parpadeo { 50% { opacity: 0; } }
-.movil-teclas { display: flex; gap: 5px; }
-.movil-teclas span {
-  flex: 1;
-  text-align: center;
-  padding: 7px 0;
-  border-radius: 7px;
-  background: var(--panel);
-  border: 1px solid var(--borde);
-  color: var(--tenue);
-  font-family: var(--mono);
-  font-size: 10px;
-}
 
 /* -------------------------------------------------------- franja datos */
 
@@ -360,7 +410,7 @@ h1 span { display: block; }
 /* ---------------------------------------------------------- secciones */
 
 .seccion { padding: 110px 0; }
-.seccion.oscura { background: rgba(5, 5, 6, 0.55); border-top: 1px solid var(--borde); border-bottom: 1px solid var(--borde); }
+.seccion.oscura { background: rgba(5, 5, 6, 0.72); border-top: 1px solid var(--borde); border-bottom: 1px solid var(--borde); }
 
 .etiqueta {
   margin: 0 0 14px;
@@ -542,7 +592,7 @@ h2 {
   .marca-texto { font-size: 13.5px; }
   .boton.grande { width: 100%; }
   .botones { flex-direction: column; }
-  .movil-marco { width: 260px; height: 520px; }
+  .movil-marco { width: 258px; height: 520px; }
 }
 
 /* Quien pide menos movimiento, menos movimiento tiene: el fondo se para desde
