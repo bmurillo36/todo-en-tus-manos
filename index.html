@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Todo en tus Manos — Claude Code en tu bolsillo</title>
+<meta name="description" content="El agente de programación de Anthropic, en tu propio servidor y manejado desde el móvil. Tu servidor, tu GitHub, tus datos. 9,99 €/mes de mantenimiento.">
+<meta name="theme-color" content="#0a0a0b">
+<meta property="og:title" content="Todo en tus Manos — Claude Code en tu bolsillo">
+<meta property="og:description" content="Tu servidor. Tu código. Tu bolsillo.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+<!-- El código de Claude escribiéndose detrás de todo. Es un canvas, no un
+     vídeo: pesa unos kilobytes, se ve nítido en cualquier pantalla y se para
+     solo si el sistema pide menos animación. -->
+<canvas id="fondo" aria-hidden="true"></canvas>
+<div class="velo" aria-hidden="true"></div>
+
+<header class="barra" id="barra">
+  <a class="marca" href="#inicio">
+    <span class="chispa" aria-hidden="true">
+      <svg viewBox="0 0 32 32"><path d="M16 1.6l2.9 9.1 9.1-2.9-6.2 7.2 6.2 7.2-9.1-2.9-2.9 9.1-2.9-9.1-9.1 2.9 6.2-7.2-6.2-7.2 9.1 2.9z"/></svg>
+    </span>
+    <span class="marca-texto">Todo en tus <b>Manos</b></span>
+  </a>
+  <nav class="menu" id="menu">
+    <a href="#que-es" data-t="nav.quees">Qué es</a>
+    <a href="#caracteristicas" data-t="nav.carac">Características</a>
+    <a href="#seguridad" data-t="nav.seg">Seguridad</a>
+    <a href="#precios" data-t="nav.precios">Precios</a>
+  </nav>
+  <div class="barra-derecha">
+    <button class="selector-idioma" id="btnIdioma" type="button" aria-label="Idioma">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><line x1="3.5" y1="9" x2="20.5" y2="9"/><line x1="3.5" y1="15" x2="20.5" y2="15"/></svg>
+      <span id="idiomaActual">ES</span>
+    </button>
+    <a class="boton acento" href="#contacto" data-t="nav.cta">Pedir presupuesto</a>
+  </div>
+</header>
+
+<div class="capa-idiomas" id="capaIdiomas" hidden>
+  <button type="button" data-idioma="es">Español</button>
+  <button type="button" data-idioma="en">English</button>
+  <button type="button" data-idioma="fr">Français</button>
+  <button type="button" data-idioma="it">Italiano</button>
+  <button type="button" data-idioma="zh">中文</button>
+</div>
+
+<main>
+
+  <!-- ------------------------------------------------------- portada -->
+  <section class="portada" id="inicio">
+    <div class="contenido portada-caja">
+      <p class="pildora" data-parallax="0.25">
+        <span class="punto"></span>
+        <span data-t="hero.pildora">sesión persistente · tmux · 24/7</span>
+      </p>
+      <h1 data-parallax="0.12">
+        <span data-t="hero.h1a">Claude Code,</span>
+        <span class="naranja" data-t="hero.h1b">en tus manos.</span>
+      </h1>
+      <p class="entradilla" data-parallax="0.06" data-t="hero.intro">
+        El agente de programación de Anthropic, funcionando en tu propio servidor y
+        manejado desde el móvil. Cierra la app, pierde cobertura, vete a comer:
+        Claude sigue trabajando. Cuando vuelvas, todo está donde lo dejaste.
+      </p>
+      <div class="botones">
+        <a class="boton acento grande" href="#contacto" data-t="hero.cta1">Pedir presupuesto</a>
+        <a class="boton contorno grande" href="#caracteristicas" data-t="hero.cta2">Ver qué hace</a>
+      </div>
+      <p class="apunte" data-t="hero.pie">Tu servidor · tu GitHub · tus datos. 9,99 €/mes de mantenimiento.</p>
+    </div>
+
+    <!-- Móvil de la portada: la terminal contándose sola. -->
+    <div class="movil" data-parallax="-0.18" aria-hidden="true">
+      <div class="movil-marco">
+        <div class="movil-muesca"></div>
+        <div class="movil-barra"><span class="chispa-mini"></span> claude · mi-proyecto</div>
+        <div class="movil-terminal" id="terminalDemo"></div>
+        <div class="movil-teclas"><span>esc</span><span>⏎</span><span>⌫</span><span>▲</span><span>▼</span></div>
+      </div>
+    </div>
+
+    <div class="franja-datos">
+      <div><b>24/7</b><span data-t="datos.1">la sesión nunca se apaga</span></div>
+      <div><b>6</b><span data-t="datos.2">idiomas en la app</span></div>
+      <div><b>0</b><span data-t="datos.3">datos en servidores ajenos</span></div>
+      <div><b>9,99 €</b><span data-t="datos.4">al mes, sin permanencia</span></div>
+    </div>
+  </section>
+
+  <!-- --------------------------------------------------------- qué es -->
+  <section id="que-es" class="seccion">
+    <div class="contenido">
+      <p class="etiqueta" data-t="sec.quees">Cómo funciona</p>
+      <h2 class="revelar" data-t="quees.h2">Tres piezas, y las tres son tuyas</h2>
+      <p class="bajada revelar" data-t="quees.bajada">Nada pasa por servidores de terceros. El circuito entero es de tu propiedad.</p>
+
+      <div class="piezas">
+        <article class="pieza revelar">
+          <span class="numero">01</span>
+          <h3 data-t="pieza1.h3">Tu servidor</h3>
+          <p data-t="pieza1.p">Un servidor pequeño en la nube que alquilas tú, a tu nombre. Ahí vive Claude Code y ahí se quedan tus proyectos.</p>
+        </article>
+        <article class="pieza revelar">
+          <span class="numero">02</span>
+          <h3 data-t="pieza2.h3">Tu móvil</h3>
+          <p data-t="pieza2.p">Abres la app desde la pantalla de inicio, entras con la cara y le hablas a Claude como si le escribieras un mensaje.</p>
+        </article>
+        <article class="pieza revelar">
+          <span class="numero">03</span>
+          <h3 data-t="pieza3.h3">Tu GitHub</h3>
+          <p data-t="pieza3.p">Cada cambio queda guardado en tu cuenta de GitHub: historial completo, ramas del móvil y fusión automática.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------- características -->
+  <section id="caracteristicas" class="seccion oscura">
+    <div class="contenido">
+      <p class="etiqueta" data-t="sec.carac">Características</p>
+      <h2 class="revelar" data-t="carac.h2">Todo lo que necesitas para programar desde el móvil</h2>
+      <p class="bajada revelar" data-t="carac.bajada">Pensado para usarse con una mano, en cualquier sitio y sin saber nada de terminales.</p>
+
+      <div class="rejilla">
+        <article class="tarjeta revelar">
+          <h3 data-t="c1.h3">Una terminal que nunca se apaga</h3>
+          <p data-t="c1.p">Sesión persistente en tu servidor. Cierra la app o pierde cobertura: Claude sigue trabajando y todo te espera al volver.</p>
+        </article>
+        <article class="tarjeta revelar">
+          <h3 data-t="c2.h3">Cara y doble llave</h3>
+          <p data-t="c2.p">Entras con la cara o con contraseña más un código de seis dígitos que cambia cada treinta segundos. Dos cerraduras, una puerta.</p>
+        </article>
+        <article class="tarjeta revelar">
+          <h3 data-t="c3.h3">GitHub sin complicaciones</h3>
+          <p data-t="c3.p">Clona proyectos de un desplegable, guarda y sube solo, y fusiona a main sin escribir una orden.</p>
+        </article>
+        <article class="tarjeta revelar">
+          <h3 data-t="c4.h3">Conectado a claude.ai</h3>
+          <p data-t="c4.p">Desde el chat de claude.ai no solo consultas tu código: editas ficheros, haces commit y subes. Con un interruptor que se apaga solo.</p>
+        </article>
+        <article class="tarjeta revelar">
+          <h3 data-t="c5.h3">Se actualiza solo</h3>
+          <p data-t="c5.p">Cada mejora llega a tu servidor sin que toques nada. Abres la app y ya está la última versión.</p>
+        </article>
+        <article class="tarjeta revelar">
+          <h3 data-t="c6.h3">Hecho para el dedo, en 6 idiomas</h3>
+          <p data-t="c6.p">Scroll táctil por todo el historial, cuadro que refleja lo que escribes, y la app entera en seis idiomas.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------ seguridad -->
+  <section id="seguridad" class="seccion">
+    <div class="contenido">
+      <p class="etiqueta" data-t="sec.seg">Seguridad</p>
+      <h2 class="revelar" data-t="seg.h2">Tus datos son tuyos. De verdad.</h2>
+      <p class="bajada revelar" data-t="seg.bajada">No hay cuentas nuestras de por medio ni servidores compartidos: el servidor es tuyo y las llaves también.</p>
+
+      <div class="lista-seg">
+        <div class="revelar"><b data-t="s1.b">La llave no sale del móvil</b><span data-t="s1.p">Tu llave secreta vive en el chip seguro del teléfono. Ni el servidor la conoce, ni se puede robar por internet.</span></div>
+        <div class="revelar"><b data-t="s2.b">Doble factor siempre</b><span data-t="s2.p">Aunque alguien adivinase tu contraseña, sin el código de seis dígitos de tu móvil no entra. Punto.</span></div>
+        <div class="revelar"><b data-t="s3.b">Todo viaja cifrado</b><span data-t="s3.p">La conexión entre tu móvil y tu servidor va siempre por HTTPS con certificado propio, igual que la web de tu banco.</span></div>
+        <div class="revelar"><b data-t="s4.b">El servidor es del cliente</b><span data-t="s4.p">Está contratado a tu nombre y solo tú tienes las claves. Tu código y tus conversaciones no pasan por nadie más.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- -------------------------------------------------------- precios -->
+  <section id="precios" class="seccion oscura">
+    <div class="contenido">
+      <p class="etiqueta" data-t="sec.precios">Precios</p>
+      <h2 class="revelar" data-t="prec.h2">Un pago por la puesta en marcha, casi nada al mes</h2>
+      <p class="bajada revelar" data-t="prec.bajada">Aparte necesitarás tus propias cuentas: una suscripción de pago de Anthropic (con la Pro basta), GitHub —que es gratis— y un servidor pequeño.</p>
+
+      <div class="planes">
+        <article class="plan revelar">
+          <h3 data-t="plan1.h3">Instalación completa</h3>
+          <p class="cifra" data-t="plan1.cifra">Presupuesto</p>
+          <p class="plan-nota" data-t="plan1.nota">Pago único. Te lo dejamos funcionando en tu servidor y en tu móvil.</p>
+          <ul>
+            <li data-t="plan1.l1">Instalación en tu servidor con HTTPS</li>
+            <li data-t="plan1.l2">Cara, doble factor y GitHub configurados</li>
+            <li data-t="plan1.l3">Puesta en marcha guiada en tu móvil</li>
+            <li data-t="plan1.l4">Guía de instalación imprimible incluida</li>
+          </ul>
+          <a class="boton contorno ancho" href="#contacto" data-t="plan1.cta">Escríbenos</a>
+        </article>
+
+        <article class="plan destacado revelar">
+          <span class="cinta" data-t="plan2.cinta">mantenimiento</span>
+          <h3 data-t="plan2.h3">Todo cuidado</h3>
+          <p class="cifra">9,99 €<small data-t="plan2.mes"> / mes</small></p>
+          <p class="plan-nota" data-t="plan2.nota">Menos de lo que cuesta un café. Al mes, y sin permanencia.</p>
+          <ul>
+            <li data-t="plan2.l1">Actualizaciones automáticas desde GitHub</li>
+            <li data-t="plan2.l2">Mejoras y funciones nuevas incluidas</li>
+            <li data-t="plan2.l3">Soporte por correo</li>
+            <li data-t="plan2.l4">Se renueva mes a mes, sin permanencia</li>
+          </ul>
+          <a class="boton acento ancho" href="#contacto" data-t="plan2.cta">Empezar</a>
+        </article>
+      </div>
+
+      <p class="apunte centrado" data-t="prec.guia">¿Prefieres montarlo tú? Tienes la guía de instalación paso a paso.</p>
+      <p class="centrado"><a class="enlace" href="guia.html" data-t="prec.enlaceguia">Ver la guía de instalación</a></p>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------ faq -->
+  <section id="faq" class="seccion">
+    <div class="contenido estrecho">
+      <p class="etiqueta" data-t="sec.faq">Preguntas</p>
+      <h2 class="revelar" data-t="faq.h2">Lo que todo el mundo pregunta</h2>
+
+      <div class="acordeon" id="acordeon">
+        <details class="revelar">
+          <summary data-t="f1.q">¿Necesito saber programar?</summary>
+          <p data-t="f1.a">No. Le escribes a Claude lo que quieres con tus palabras —«arregla el botón que no responde», «añade una página de contacto»— y él hace el trabajo. La app trae además un manual y las órdenes explicadas en llano.</p>
+        </details>
+        <details class="revelar">
+          <summary data-t="f2.q">¿Y si cierro la app o pierdo la cobertura?</summary>
+          <p data-t="f2.a">Nada malo. Claude trabaja en tu servidor, no en el teléfono. Puedes cerrar la app, meterte en un túnel o apagar el móvil: al volver, la conversación y el trabajo siguen exactamente donde estaban.</p>
+        </details>
+        <details class="revelar">
+          <summary data-t="f3.q">¿Dónde se guardan mis proyectos?</summary>
+          <p data-t="f3.a">En tu propio servidor, contratado a tu nombre, y con copia en tu cuenta de GitHub. Nosotros no guardamos nada tuyo: instalamos el programa y las llaves se quedan contigo.</p>
+        </details>
+        <details class="revelar">
+          <summary data-t="f4.q">¿Qué necesito para empezar?</summary>
+          <p data-t="f4.a">Tres cuentas: una suscripción de pago de Anthropic (Pro, Max, Team o Enterprise; con la Pro basta), una cuenta de GitHub gratuita y un servidor pequeño con un dominio. Con la instalación completa lo hacemos por ti.</p>
+        </details>
+        <details class="revelar">
+          <summary data-t="f5.q">¿Con qué planes de Claude funciona?</summary>
+          <p data-t="f5.a">Con los cuatro de pago: Pro, Max, Team y Enterprise. Es el mismo Claude Code en todos; lo único que cambia es el margen de uso. Con la Pro basta para empezar.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------- contacto -->
+  <section id="contacto" class="cierre">
+    <div class="contenido">
+      <h2 class="revelar"><span data-t="cierre.h2a">Tu servidor. Tu código.</span> <span class="naranja" data-t="cierre.h2b">Tu bolsillo.</span></h2>
+      <p class="bajada revelar" data-t="cierre.p">Cuéntanos qué quieres montar y te decimos qué hace falta, sin compromiso.</p>
+      <a class="boton acento grande" href="mailto:pedro@prevencion.cc?subject=Todo%20en%20tus%20Manos" data-t="cierre.cta">Escríbenos</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pie">
+  <div class="contenido">
+    <span>Todo en tus Manos</span>
+    <span class="apunte" data-t="pie.nota">Claude y Claude Code son marcas de Anthropic. Este producto instala y gestiona Claude Code en tu propio servidor.</span>
+  </div>
+</footer>
+
+<script src="js/idiomas.js"></script>
+<script src="js/fondo.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
