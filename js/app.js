@@ -302,6 +302,34 @@ function contarCifras() {
 }
 if (!QUIETO) contarCifras();
 
+/* --------------------------------------------------- vídeo de la escena */
+
+/* A cámara lenta y solo mientras se ve. Lo de la velocidad no se puede poner
+   en el HTML —no hay atributo para eso—, así que va aquí. Y pausarlo cuando
+   la sección no está en pantalla no es un capricho: un vídeo en bucle que
+   nadie mira sigue gastando batería y calentando el teléfono. */
+const videoEscena = $('videoEscena');
+if (videoEscena) {
+  const LENTO = 0.55;
+  const ponerLento = () => { try { videoEscena.playbackRate = LENTO; } catch (e) { /* aún no listo */ } };
+  videoEscena.addEventListener('loadedmetadata', ponerLento);
+  videoEscena.addEventListener('play', ponerLento);
+  ponerLento();
+
+  if (QUIETO) {
+    /* Con «menos movimiento» pedido: un fotograma quieto y nada más. */
+    videoEscena.pause();
+  } else if ('IntersectionObserver' in window) {
+    const vigilante = new IntersectionObserver((entradas) => {
+      entradas.forEach((e) => {
+        if (e.isIntersecting) { videoEscena.play().then(ponerLento).catch(() => {}); }
+        else { videoEscena.pause(); }
+      });
+    }, { threshold: 0.01 });
+    vigilante.observe(videoEscena);
+  }
+}
+
 /* ------------------------------------------------------------- arranque */
 
 /* Lo último del fichero, a propósito: aquí ya están declaradas todas las

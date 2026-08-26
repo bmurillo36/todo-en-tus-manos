@@ -549,24 +549,42 @@ h1 span { display: block; }
 .con-escena { position: relative; overflow: hidden; }
 .escena {
   position: absolute;
-  inset: -6% -4%;
+  inset: 0;
   z-index: -1;
-  background-image:
-    linear-gradient(180deg, rgba(6, 6, 8, 0.92) 0%, rgba(6, 6, 8, 0.7) 35%, rgba(6, 6, 8, 0.94) 100%),
-    radial-gradient(60% 45% at 50% 38%, rgba(217, 119, 87, 0.20), transparent 70%),
-    url('../img/programando.jpg'),
+  overflow: hidden;
+  /* Degradado de reserva: si el vídeo no carga, esto es lo que queda y la
+     sección se ve bien igual. Nunca un rectángulo negro vacío. */
+  background:
+    radial-gradient(60% 45% at 50% 38%, rgba(217, 119, 87, 0.16), transparent 70%),
     radial-gradient(70% 60% at 50% 30%, #1a1512 0%, #0a0a0b 70%);
-  background-size: cover, cover, cover, cover;
-  background-position: center, center, center 42%, center;
-  background-repeat: no-repeat;
-  /* Movimiento de cámara lento: acerca y se aleja. Es lo que hace que una foto
-     fija parezca metraje sin pesar lo que pesa un vídeo. */
-  animation: escena-camara 26s ease-in-out infinite alternate;
 }
-@keyframes escena-camara {
-  from { transform: scale(1) translate3d(0, 0, 0); }
-  to   { transform: scale(1.09) translate3d(-1.5%, -1.2%, 0); }
+
+/* El vídeo, oscuro y difuminado a propósito: es un FONDO, no un contenido.
+   Tiene que dar ambiente sin robarle la atención al texto de encima, y con un
+   desenfoque suave las letras se leen sin pelearse con lo que se mueve detrás.
+   El scale(1.12) tapa el borde translúcido que deja el blur al recortar. */
+.escena-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.12);
+  filter: blur(7px) brightness(0.40) contrast(1.06) saturate(0.72);
+  /* Se funde por los bordes en vez de cortarse en seco contra la sección. */
+  -webkit-mask-image: radial-gradient(120% 100% at 50% 50%, #000 55%, transparent 100%);
+  mask-image: radial-gradient(120% 100% at 50% 50%, #000 55%, transparent 100%);
 }
+
+/* Una capa más encima para asentar el negro y meter el naranja de la casa. */
+.escena-velo {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(6, 6, 8, 0.90) 0%, rgba(6, 6, 8, 0.62) 40%, rgba(6, 6, 8, 0.93) 100%),
+    radial-gradient(55% 45% at 50% 40%, rgba(217, 119, 87, 0.13), transparent 72%);
+}
+
 .con-escena .contenido { position: relative; z-index: 1; }
 
 .seccion.oscura { background: rgba(5, 5, 6, 0.72); border-top: 1px solid var(--borde); border-bottom: 1px solid var(--borde); }

@@ -16,7 +16,7 @@
 <!-- El ?v= es a propósito: GitHub Pages deja los ficheros en cache diez
      minutos, y sin esto el navegador sigue sirviendo el CSS y el JS viejos
      despues de publicar. Al tocar css o js, se SUBE este numero. -->
-<link rel="stylesheet" href="css/estilos.css?v=5">
+<link rel="stylesheet" href="css/estilos.css?v=6">
 </head>
 <body>
 
@@ -142,10 +142,17 @@
 
   <!-- ------------------------------------------------- características -->
   <section id="caracteristicas" class="seccion oscura con-escena">
-    <!-- Fondo de la sección: un informático escribiendo, luz tenue y picado
-         desde arriba. Si el fichero no está, queda el degradado de debajo y la
-         sección se ve bien igual: nunca un hueco roto. -->
-    <div class="escena" aria-hidden="true"></div>
+    <!-- Fondo de la sección: un informático escribiendo, en vídeo. Va oscuro,
+         difuminado y a cámara lenta: es un fondo, no un contenido — tiene que
+         dar ambiente sin robarle la atención al texto de encima.
+         El degradado de .escena queda por debajo, así que si el vídeo no
+         cargara (datos, formato) la sección se ve bien igual. -->
+    <div class="escena" aria-hidden="true">
+      <video id="videoEscena" class="escena-video" autoplay muted loop playsinline preload="metadata">
+        <source src="video/programando.mp4" type="video/mp4">
+      </video>
+      <span class="escena-velo"></span>
+    </div>
     <div class="contenido">
       <p class="etiqueta" data-t="sec.carac">Características</p>
       <h2 class="revelar" data-t="carac.h2">Todo lo que necesitas para programar desde el móvil</h2>
@@ -312,8 +319,8 @@
   </div>
 </footer>
 
-<script src="js/idiomas.js?v=5"></script>
-<script src="js/fondo.js?v=5"></script>
-<script src="js/app.js?v=5"></script>
+<script src="js/idiomas.js?v=6"></script>
+<script src="js/fondo.js?v=6"></script>
+<script src="js/app.js?v=6"></script>
 </body>
 </html>
