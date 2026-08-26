@@ -254,8 +254,12 @@ function contarCifras() {
       ojo.unobserve(e.target);
       const b = e.target;
       const original = b.textContent.trim();
-      const m = /^([0-9]+(?:,[0-9]+)?)(.*)$/.exec(original);
-      if (!m) return;                      // «24/7» y compañía: no se tocan
+      /* Solo se cuenta lo que ES una cifra: «24/7» no es un número, es una
+         forma de decir «siempre», y contarlo lo deja en «1/7» a mitad de
+         camino — que fue justo lo que pasó. La barra lo descarta. */
+      if (original.includes('/')) return;
+      const m = /^([0-9]+(?:,[0-9]+)?)(\s*[^0-9]*)$/.exec(original);
+      if (!m) return;
       const destino = parseFloat(m[1].replace(',', '.'));
       const cola = m[2];
       const decimales = m[1].includes(',') ? m[1].split(',')[1].length : 0;
