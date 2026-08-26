@@ -77,7 +77,11 @@ function alDesplazar() {
   if (!QUIETO) moverParallax(y);
 }
 window.addEventListener('scroll', () => requestAnimationFrame(alDesplazar), { passive: true });
-alDesplazar();
+/* La primera pasada NO se hace aquí: alDesplazar() llama a moverParallax(), que
+   usa constantes declaradas más abajo. Con `const`/`let` eso no vale undefined,
+   es un error de zona muerta que corta el fichero entero — y con el fichero
+   cortado no se monta el observador que hace aparecer los textos, así que la
+   página se queda en blanco. Se arranca al final, cuando ya existe todo. */
 
 /* ---------------------------------------------------------- parallax */
 
@@ -212,3 +216,9 @@ if (pantalla) {
     tic();
   }
 }
+
+/* ------------------------------------------------------------- arranque */
+
+/* Lo último del fichero, a propósito: aquí ya están declaradas todas las
+   constantes que toca la primera pasada. */
+alDesplazar();
