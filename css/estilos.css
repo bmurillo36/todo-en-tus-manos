@@ -189,6 +189,50 @@ header, main, footer, .capa-idiomas { position: relative; z-index: 2; }
 .boton.contorno { border-color: var(--borde-claro); color: var(--texto); background: rgba(255, 255, 255, 0.02); }
 .boton.contorno:hover { border-color: var(--naranja); color: var(--naranja); transform: translateY(-2px); }
 
+/* Láser: un trazo naranja recorre el borde entero del botón al pasar por
+   encima. Va en un SVG (lo mete efectos.js en cada botón) y no con un borde
+   animado por CSS: con `pathLength=100` el recorrido dura lo mismo en un botón
+   ancho que en uno estrecho, y `non-scaling-stroke` mantiene el grosor
+   constante aunque el viewBox se estire. */
+.boton { position: relative; overflow: hidden; isolation: isolate; }
+.boton .laser {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 2;
+}
+.boton .laser rect {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 26 74;
+  stroke-dashoffset: 100;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.85));
+}
+.boton.acento .laser rect { stroke: #fff2ea; }
+.boton.contorno .laser rect { stroke: var(--naranja-vivo); filter: drop-shadow(0 0 7px var(--naranja)); }
+.boton:hover .laser, .boton:focus-visible .laser { opacity: 1; }
+.boton:hover .laser rect, .boton:focus-visible .laser rect { animation: laser-vuelta 1.05s linear infinite; }
+@keyframes laser-vuelta { to { stroke-dashoffset: 0; } }
+
+/* Y un brillo que barre el botón de lado a lado, para que el láser no vaya
+   solo. */
+.boton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.24) 48%, transparent 66%);
+  transform: translateX(-130%);
+  transition: transform 0.62s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.boton:hover::after { transform: translateX(130%); }
+
 .enlace { color: var(--naranja); text-decoration: none; border-bottom: 1px solid rgba(217, 119, 87, 0.4); }
 .enlace:hover { border-bottom-color: var(--naranja); }
 
@@ -380,23 +424,42 @@ h1 span { display: block; }
 
 /* -------------------------------------------------------- franja datos */
 
+/* Sin overflow:hidden a propósito: los cuadros CRECEN al pasar por encima y
+   con el recorte se les cortaría el brillo y el borde. El hueco de rejilla
+   pasa a ser un borde por cuadro. */
 .franja-datos {
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1px;
+  gap: 10px;
   margin-top: 56px;
-  background: var(--borde);
-  border: 1px solid var(--borde);
-  border-radius: 16px;
-  overflow: hidden;
 }
 .franja-datos div {
-  background: rgba(10, 10, 11, 0.72);
-  padding: 22px 18px;
+  position: relative;
+  background: rgba(14, 14, 17, 0.86);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  padding: 24px 20px;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  cursor: default;
+  transform-origin: center;
+  transition:
+    transform 0.42s cubic-bezier(0.2, 1.4, 0.35, 1),
+    border-color 0.3s ease,
+    box-shadow 0.42s ease,
+    background 0.3s ease;
+}
+/* El zoom: crece de verdad, se levanta por encima de sus vecinos y se
+   enciende. El cubic-bezier pasa de 1 y luego vuelve: ese rebote pequeñito es
+   lo que lo hace parecer vivo en vez de una escala sin más. */
+.franja-datos div:hover {
+  transform: scale(1.14) translateY(-6px);
+  z-index: 3;
+  border-color: var(--naranja);
+  background: rgba(28, 20, 17, 0.96);
+  box-shadow: 0 26px 60px rgba(0, 0, 0, 0.6), 0 0 46px rgba(217, 119, 87, 0.32);
 }
 .franja-datos b {
   font-family: var(--mono);
@@ -404,8 +467,37 @@ h1 span { display: block; }
   color: var(--naranja);
   font-weight: 700;
   letter-spacing: -0.02em;
+  transition: transform 0.42s cubic-bezier(0.2, 1.4, 0.35, 1), color 0.3s ease, text-shadow 0.3s ease;
+  transform-origin: left center;
 }
-.franja-datos span { color: var(--tenue); font-size: 12.5px; line-height: 1.35; }
+.franja-datos div:hover b {
+  transform: scale(1.18);
+  color: var(--naranja-vivo);
+  text-shadow: 0 0 26px rgba(255, 139, 99, 0.55);
+}
+.franja-datos span {
+  color: var(--tenue);
+  font-size: 12.5px;
+  line-height: 1.35;
+  transition: color 0.3s ease;
+}
+.franja-datos div:hover span { color: var(--texto); }
+
+/* Un aro naranja que sale del cuadro al encenderse. */
+.franja-datos div::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 16px;
+  border: 1px solid var(--naranja);
+  opacity: 0;
+  pointer-events: none;
+}
+.franja-datos div:hover::after { animation: aro-datos 0.75s ease-out; }
+@keyframes aro-datos {
+  0% { opacity: 0.9; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.16); }
+}
 
 /* ---------------------------------------------------------- secciones */
 

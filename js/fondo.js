@@ -82,8 +82,8 @@
           linea: Math.floor(Math.random() * LINEAS.length),
           /* Cuántas letras de la línea van escritas: así parece que alguien
              está tecleando, no un cartel que pasa. */
-          letras: Math.floor(Math.random() * 12),
-          espera: Math.random() * 40
+          letras: Math.random() < 0.55 ? 99 : Math.floor(Math.random() * 18),
+          espera: Math.random() * 25
         });
       }
     });
@@ -101,15 +101,15 @@
       if (col.y > alto + 40) {
         col.y = -30;
         col.linea = Math.floor(Math.random() * LINEAS.length);
-        col.letras = 0;
-        col.espera = Math.random() * 30;
+        col.letras = Math.random() < 0.5 ? 99 : 0;
+        col.espera = Math.random() * 20;
       }
 
       const texto = LINEAS[col.linea];
       if (col.espera > 0) {
-        col.espera -= dt * 60;
+        col.espera -= dt * 90;
       } else if (col.letras < texto.length) {
-        col.letras += dt * 26;
+        col.letras += dt * 90;
       }
       const escrito = texto.slice(0, Math.floor(col.letras));
       if (!escrito) continue;

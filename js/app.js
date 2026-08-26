@@ -217,6 +217,67 @@ if (pantalla) {
   }
 }
 
+/* ------------------------------------------------------- láser y cifras */
+
+/* El trazo del láser va en un SVG metido al vuelo en cada botón, no en un
+   borde animado por CSS: con `pathLength="100"` el recorrido dura lo mismo en
+   un botón ancho que en uno estrecho, y `non-scaling-stroke` mantiene el
+   grosor aunque el viewBox se estire. Es el mismo truco que usa la app. */
+function ponerLaser() {
+  const NS = 'http://www.w3.org/2000/svg';
+  document.querySelectorAll('.boton').forEach((b) => {
+    if (b.querySelector('.laser')) return;
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('class', 'laser');
+    svg.setAttribute('viewBox', '0 0 100 100');
+    svg.setAttribute('preserveAspectRatio', 'none');
+    svg.setAttribute('aria-hidden', 'true');
+    const r = document.createElementNS(NS, 'rect');
+    r.setAttribute('x', '1'); r.setAttribute('y', '1');
+    r.setAttribute('width', '98'); r.setAttribute('height', '98');
+    r.setAttribute('rx', '9'); r.setAttribute('pathLength', '100');
+    svg.appendChild(r);
+    b.appendChild(svg);
+  });
+}
+if (!QUIETO) ponerLaser();
+
+/* Las cifras de la franja (24/7, 6, 0, 9,99 €) suben desde cero al entrar en
+   pantalla. Solo lo hacen una vez y solo si son un número: «24/7» se queda
+   como está, que contarlo no significaría nada. */
+function contarCifras() {
+  const cajas = document.querySelectorAll('.franja-datos b');
+  if (!cajas.length || !('IntersectionObserver' in window)) return;
+  const ojo = new IntersectionObserver((entradas) => {
+    entradas.forEach((e) => {
+      if (!e.isIntersecting) return;
+      ojo.unobserve(e.target);
+      const b = e.target;
+      const original = b.textContent.trim();
+      const m = /^([0-9]+(?:,[0-9]+)?)(.*)$/.exec(original);
+      if (!m) return;                      // «24/7» y compañía: no se tocan
+      const destino = parseFloat(m[1].replace(',', '.'));
+      const cola = m[2];
+      const decimales = m[1].includes(',') ? m[1].split(',')[1].length : 0;
+      const arranque = performance.now();
+      const DURA = 1100;
+      const paso = (ahora) => {
+        const avance = Math.min((ahora - arranque) / DURA, 1);
+        /* Frena al final en vez de ir a velocidad constante: así parece que
+           el número «llega» en lugar de cortarse en seco. */
+        const suave = 1 - Math.pow(1 - avance, 3);
+        const valor = (destino * suave).toFixed(decimales).replace('.', ',');
+        b.textContent = valor + cola;
+        if (avance < 1) requestAnimationFrame(paso);
+        else b.textContent = original;
+      };
+      requestAnimationFrame(paso);
+    });
+  }, { threshold: 0.6 });
+  cajas.forEach((b) => ojo.observe(b));
+}
+if (!QUIETO) contarCifras();
+
 /* ------------------------------------------------------------- arranque */
 
 /* Lo último del fichero, a propósito: aquí ya están declaradas todas las
