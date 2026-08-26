@@ -547,10 +547,16 @@ h1 span { display: block; }
    fichero no existe queda el degradado y la sección se ve bien igual. Nunca un
    hueco roto por una imagen que falta. */
 .con-escena { position: relative; overflow: hidden; }
+/* Sin fondo propio: el que oscurece es el velo del vídeo, y dos capas de
+   negro encima lo dejarían en un rectángulo apagado. */
+.seccion.oscura.con-escena { background: transparent; }
 .escena {
   position: absolute;
   inset: 0;
-  z-index: -1;
+  /* z-index 0, NO -1. Con -1 el vídeo queda por detrás del fondo del propio
+     padre, y la sección lleva un 72 % de negro encima: aunque cargue, no se
+     ve. El texto sube a 1 y con eso basta. */
+  z-index: 0;
   overflow: hidden;
   /* Degradado de reserva: si el vídeo no carga, esto es lo que queda y la
      sección se ve bien igual. Nunca un rectángulo negro vacío. */
@@ -570,7 +576,7 @@ h1 span { display: block; }
   height: 100%;
   object-fit: cover;
   transform: scale(1.12);
-  filter: blur(7px) brightness(0.40) contrast(1.06) saturate(0.72);
+  filter: blur(7px) brightness(0.62) contrast(1.05) saturate(0.75);
   /* Se funde por los bordes en vez de cortarse en seco contra la sección. */
   -webkit-mask-image: radial-gradient(120% 100% at 50% 50%, #000 55%, transparent 100%);
   mask-image: radial-gradient(120% 100% at 50% 50%, #000 55%, transparent 100%);
