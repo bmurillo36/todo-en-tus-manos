@@ -13,7 +13,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="css/estilos.css">
+<!-- El ?v= es a propósito: GitHub Pages deja los ficheros en cache diez
+     minutos, y sin esto el navegador sigue sirviendo el CSS y el JS viejos
+     despues de publicar. Al tocar css o js, se SUBE este numero. -->
+<link rel="stylesheet" href="css/estilos.css?v=3">
 </head>
 <body>
 
@@ -276,8 +279,8 @@
   </div>
 </footer>
 
-<script src="js/idiomas.js"></script>
-<script src="js/fondo.js"></script>
-<script src="js/app.js"></script>
+<script src="js/idiomas.js?v=3"></script>
+<script src="js/fondo.js?v=3"></script>
+<script src="js/app.js?v=3"></script>
 </body>
 </html>
